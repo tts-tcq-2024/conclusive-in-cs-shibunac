@@ -23,7 +23,7 @@ public class TypewiseAlert
     MED_ACTIVE_COOLING
   };
 
-  private static (double lowerLimit, double upperLimit) GetCoolingLimits(CoolingType coolingType)
+  public static (double lowerLimit, double upperLimit) GetCoolingLimits(CoolingType coolingType)
   {
     return coolingType switch
     {
@@ -34,7 +34,7 @@ public class TypewiseAlert
     };
   }
 
-  public static BreachType ClassifyTemperatureBreach(CoolingType coolingType, double temperatureInC)
+  private static BreachType ClassifyTemperatureBreach(CoolingType coolingType, double temperatureInC)
   {
     var (lowerLimit, upperLimit) = GetCoolingLimits(coolingType);
     return InferBreach(temperatureInC, lowerLimit, upperLimit);
@@ -52,7 +52,7 @@ public class TypewiseAlert
     public string brand;
   }
 
-  public static void CheckAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC)
+  private static void CheckAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC)
   {
     BreachType breachType = ClassifyTemperatureBreach(batteryChar.coolingType, temperatureInC);
     NotifyAlert(alertTarget, breachType);
@@ -71,13 +71,13 @@ public class TypewiseAlert
     }
   }
 
-  public static void SendToController(BreachType breachType)
+  private static void SendToController(BreachType breachType)
   {
     const ushort header = 0xfeed;
     Console.WriteLine($"{header} : {breachType}\n");
   }
 
-  public static void SendToEmail(BreachType breachType)
+  private static void SendToEmail(BreachType breachType)
   {
     string recipient = "a.b@c.com";
     if (breachType == BreachType.TOO_LOW)
