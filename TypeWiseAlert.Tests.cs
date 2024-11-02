@@ -66,5 +66,47 @@ public class TypewiseAlertTests
     [Fact]
     public void TestClassifyTemperatureBreach_TooHigh()
     {
-        var breachType = TypewiseAlert.ClassifyTemp
+        var breachType = TypewiseAlert.ClassifyTemperatureBreach(TypewiseAlert.CoolingType.MED_ACTIVE_COOLING, 45);
+        Assert.Equal(TypewiseAlert.BreachType.TOO_HIGH, breachType);
+    }
 
+    [Fact]
+    public void TestCheckAndAlert_ToController()
+    {
+        // Redirect console output for testing
+        using var sw = new StringWriter();
+        Console.SetOut(sw);
+
+        var batteryChar = new TypewiseAlert.BatteryCharacter { coolingType = TypewiseAlert.CoolingType.PASSIVE_COOLING, brand = "BrandX" };
+        TypewiseAlert.CheckAndAlert(TypewiseAlert.AlertTarget.TO_CONTROLLER, batteryChar, 30);
+
+        var output = sw.ToString();
+        Assert.Contains("0xfeed : NORMAL", output);
+    }
+
+    [Fact]
+    public void TestSendToEmail_TooLow()
+    {
+        // Redirect console output for testing
+        using var sw = new StringWriter();
+        Console.SetOut(sw);
+
+        TypewiseAlert.SendToEmail(TypewiseAlert.BreachType.TOO_LOW);
+        
+        var output = sw.ToString();
+        Assert.Contains("Hi, the temperature is too low", output);
+    }
+
+    [Fact]
+    public void TestSendToEmail_TooHigh()
+    {
+        // Redirect console output for testing
+        using var sw = new StringWriter();
+        Console.SetOut(sw);
+
+        TypewiseAlert.SendToEmail(TypewiseAlert.BreachType.TOO_HIGH);
+
+        var output = sw.ToString();
+        Assert.Contains("Hi, the temperature is too high", output);
+    }
+}
