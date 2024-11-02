@@ -7,7 +7,7 @@ public class TypewiseAlert
     TOO_HIGH
   };
 
-  private static BreachType InferBreach(double value, double lowerLimit, double upperLimit)
+  public static BreachType InferBreach(double value, double lowerLimit, double upperLimit)
   {
     if (value < lowerLimit)
       return BreachType.TOO_LOW;
@@ -52,7 +52,7 @@ public class TypewiseAlert
     public string brand;
   }
 
-  private static void CheckAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC)
+  public static void CheckAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC)
   {
     BreachType breachType = ClassifyTemperatureBreach(batteryChar.coolingType, temperatureInC);
     NotifyAlert(alertTarget, breachType);
