@@ -34,7 +34,7 @@ public class TypewiseAlert
     };
   }
 
-  private static BreachType ClassifyTemperatureBreach(CoolingType coolingType, double temperatureInC)
+  public static BreachType ClassifyTemperatureBreach(CoolingType coolingType, double temperatureInC)
   {
     var (lowerLimit, upperLimit) = GetCoolingLimits(coolingType);
     return InferBreach(temperatureInC, lowerLimit, upperLimit);
