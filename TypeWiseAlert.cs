@@ -7,7 +7,7 @@ public class TypewiseAlert
     TOO_HIGH
   };
 
-  public static BreachType InferBreach(double value, double lowerLimit, double upperLimit)
+  private static BreachType InferBreach(double value, double lowerLimit, double upperLimit)
   {
     if (value < lowerLimit)
       return BreachType.TOO_LOW;
@@ -71,13 +71,13 @@ public class TypewiseAlert
     }
   }
 
-  private static void SendToController(BreachType breachType)
+  public static void SendToController(BreachType breachType)
   {
     const ushort header = 0xfeed;
     Console.WriteLine($"{header} : {breachType}\n");
   }
 
-  private static void SendToEmail(BreachType breachType)
+  public static void SendToEmail(BreachType breachType)
   {
     string recipient = "a.b@c.com";
     if (breachType == BreachType.TOO_LOW)
