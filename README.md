@@ -35,7 +35,8 @@ Uncovered lines indicate an opportunity to write tests. Complex and repetitive t
 
 ## Reflections
 
-You have seen a few workflows in this repository. They are quality-gates to prevent duplication, control complexity and prove functionality. Do you think some of them have potential to guide code-improvements in your team? 
+You have seen a few workflows in this repository. They are quality-gates to prevent duplication, control complexity and prove functionality. 
+Do you think some of them have potential to guide code-improvements in your team? 
 yes
 
-through the training I understood that readability, maintainbility and testablity, holds more value than the logic . Major focus should be on clean coding
+Through the training I understood that readability, maintainbility and testablity, holds greater value. The Major focus should be on clean clear understandable coding
