@@ -99,7 +99,7 @@ public class TypeWiseAlertTests
     {
       var batteryParams = new BatteryParameters { CoolingType = coolingType };
       TypeWiseAlert.CheckAndAlert(recipient, batteryParams, temperature);
-      Assert.AreEquals(expectedBreach, _classifyTemperatureBreachFunc(coolingType, temperature));
+      NUnit.Framework.Assert.AreEqual(expectedBreach, _classifyTemperatureBreachFunc(coolingType, temperature));
     }
   }
 }
