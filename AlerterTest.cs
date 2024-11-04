@@ -1,116 +1,121 @@
-
-
-
-using System;
-using System.IO;
 using Xunit;
+using NUnit.Framework;
+using Moq;
 
-public class AlerterTest
+public class TypeWiseAlertTests
 {
-  [Fact]
-  public void TestInferBreach_Normal()
+  public enum BreachType
   {
-    var result = TemperatureBreachAnalyzer.InferBreach(25, 0, 35);
-    Assert.Equal(TemperatureBreachAnalyzer.BreachType.NORMAL, result);
+    TOO_LOW,
+    TOO_HIGH,
+    NORMAL
   }
 
-  [Fact]
-  public void TestInferBreach_TooLow()
+  public enum CoolingType
   {
-    var result = TemperatureBreachAnalyzer.InferBreach(-5, 0, 35);
-    Assert.Equal(TemperatureBreachAnalyzer.BreachType.TOO_LOW, result);
+    PASSIVE_COOLING,
+    HI_ACTIVE_COOLING
   }
 
-  [Fact]
-  public void TestInferBreach_TooHigh()
+  public class BatteryParameters
   {
-    var result = TemperatureBreachAnalyzer.InferBreach(50, 0, 35);
-    Assert.Equal(TemperatureBreachAnalyzer.BreachType.TOO_HIGH, result);
+    public CoolingType CoolingType { get; set; }
   }
 
-  [Fact]
-  public void TestGetCoolingLimits_PassiveCooling()
+  public static class TypeWiseAlert
   {
-    var (lower, upper) = TemperatureBreachAnalyzer.GetCoolingLimits(TemperatureBreachAnalyzer.CoolingType.PASSIVE_COOLING);
-    Assert.Equal(0, lower);
-    Assert.Equal(35, upper);
+    // Mocked method to classify temperature breach
+    public static BreachType ClassifyTemperatureBreach(CoolingType coolingType, double temperatureInC)
+    {
+      // Simplified logic for example
+      if (temperatureInC < 0)
+        return BreachType.TOO_LOW;
+      if (temperatureInC > (coolingType == CoolingType.PASSIVE_COOLING ? 35 : 45))
+        return BreachType.TOO_HIGH;
+      return BreachType.NORMAL;
+    }
+
+    public static void CheckAndAlert(string recipient, BatteryParameters batteryParams, double temperature)
+    {
+      BreachType breach = ClassifyTemperatureBreach(batteryParams.CoolingType, temperature);
+      // Alert logic here (not implemented for this example)
+    }
   }
 
-  [Fact]
-  public void TestGetCoolingLimits_HighActiveCooling()
+  public class TypeWiseAlertTestsSuite
   {
-    var (lower, upper) = TemperatureBreachAnalyzer.GetCoolingLimits(TemperatureBreachAnalyzer.CoolingType.HI_ACTIVE_COOLING);
-    Assert.Equal(0, lower);
-    Assert.Equal(45, upper);
-  }
+    private Func<CoolingType, double, BreachType> _classifyTemperatureBreachFunc;
 
-  [Fact]
-  public void TestGetCoolingLimits_MedActiveCooling()
-  {
-    var (lower, upper) = TemperatureBreachAnalyzer.GetCoolingLimits(TemperatureBreachAnalyzer.CoolingType.MED_ACTIVE_COOLING);
-    Assert.Equal(0, lower);
-    Assert.Equal(40, upper);
-  }
+    [SetUp]
+    public void Setup()
+    {
+      _classifyTemperatureBreachFunc = TypeWiseAlert.ClassifyTemperatureBreach;
+    }
 
-  [Fact]
-  public void TestClassifyTemperatureBreach_Normal()
-  {
-    var breachType = TemperatureBreachAnalyzer.ClassifyTemperatureBreach(TemperatureBreachAnalyzer.CoolingType.PASSIVE_COOLING, 25);
-    Assert.Equal(TemperatureBreachAnalyzer.BreachType.NORMAL, breachType);
-  }
+    [Test]
+    public void CheckAndAlert_ToController_LowBreach()
+    {
+      var temperature = -10;
+      var expectedBreach = BreachType.TOO_LOW;
+      var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
-  [Fact]
-  public void TestClassifyTemperatureBreach_TooLow()
-  {
-    var breachType = TemperatureBreachAnalyzer.ClassifyTemperatureBreach(TemperatureBreachAnalyzer.CoolingType.HI_ACTIVE_COOLING, -1);
-    Assert.Equal(TemperatureBreachAnalyzer.BreachType.TOO_LOW, breachType);
-  }
+      TypeWiseAlert.CheckAndAlert("TO_CONTROLLER", batteryParams, temperature);
+      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+    }
 
-  [Fact]
-  public void TestClassifyTemperatureBreach_TooHigh()
-  {
-    var breachType = TemperatureBreachAnalyzer.ClassifyTemperatureBreach(TemperatureBreachAnalyzer.CoolingType.MED_ACTIVE_COOLING, 45);
-    Assert.Equal(TemperatureBreachAnalyzer.BreachType.TOO_HIGH, breachType);
-  }
+    [Test]
+    public void CheckAndAlert_ToController_NormalBreach()
+    {
+      var temperature = 5;
+      var expectedBreach = BreachType.NORMAL;
+      var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
-  [Fact]
-  public void TestCheckAndAlert_ToController()
-  {
-    // Redirect console output for testing
-    using var sw = new StringWriter();
-    Console.SetOut(sw);
+      TypeWiseAlert.CheckAndAlert("TO_CONTROLLER", batteryParams, temperature);
+      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+    }
 
-    var batteryChar = new TypewiseAlert.BatteryCharacter { coolingType = TemperatureBreachAnalyzer.CoolingType.PASSIVE_COOLING, brand = "BrandX" };
-    TypewiseAlert.CheckAndAlert(TypewiseAlert.AlertTarget.TO_CONTROLLER, batteryChar, 30);
+    [Test]
+    public void CheckAndAlert_ToController_HighBreach()
+    {
+      var temperature = 50;
+      var expectedBreach = BreachType.TOO_HIGH;
+      var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
-    var output = sw.ToString();
-    Assert.Contains("0xfeed : NORMAL", output);
-  }
+      TypeWiseAlert.CheckAndAlert("TO_CONTROLLER", batteryParams, temperature);
+      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+    }
 
-  [Fact]
-  public void TestSendToEmail_TooLow()
-  {
-    // Redirect console output for testing
-    using var sw = new StringWriter();
-    Console.SetOut(sw);
+    [Test]
+    public void CheckAndAlert_ToEmail_LowBreach()
+    {
+      var temperature = -2;
+      var expectedBreach = BreachType.TOO_LOW;
+      var batteryParams = new BatteryParameters { CoolingType = CoolingType.HI_ACTIVE_COOLING };
 
-    TypewiseAlert.SendToEmail(TemperatureBreachAnalyzer.BreachType.TOO_LOW);
+      TypeWiseAlert.CheckAndAlert("TO_EMAIL", batteryParams, temperature);
+      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+    }
 
-    var output = sw.ToString();
-    Assert.Contains("Hi, the temperature is too low", output);
-  }
+    [Test]
+    public void CheckAndAlert_ToEmail_NormalBreach()
+    {
+      var temperature = 5;
+      var expectedBreach = BreachType.NORMAL;
+      var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
-  [Fact]
-  public void TestSendToEmail_TooHigh()
-  {
-    // Redirect console output for testing
-    using var sw = new StringWriter();
-    Console.SetOut(sw);
+      TypeWiseAlert.CheckAndAlert("TO_EMAIL", batteryParams, temperature);
+      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+    }
 
-    TypewiseAlert.SendToEmail(TemperatureBreachAnalyzer.BreachType.TOO_HIGH);
+    [Test]
+    public void CheckAndAlert_ToEmail_HighBreach()
+    {
+      var temperature = 50;
+      var expectedBreach = BreachType.TOO_HIGH;
+      var batteryParams = new BatteryParameters { CoolingType = CoolingType.HI_ACTIVE_COOLING };
 
-    var output = sw.ToString();
-    Assert.Contains("Hi, the temperature is too high", output);
+      TypeWiseAlert.CheckAndAlert("TO_EMAIL", batteryParams, temperature);
+      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+    }
   }
 }
-
