@@ -1,6 +1,5 @@
-using Xunit;
+
 using NUnit.Framework;
-using Moq;
 
 public class TypeWiseAlertTests
 {
@@ -60,7 +59,7 @@ public class TypeWiseAlertTests
       var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
       TypeWiseAlert.CheckAndAlert("TO_CONTROLLER", batteryParams, temperature);
-      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+      Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
     }
 
     [Test]
@@ -71,7 +70,7 @@ public class TypeWiseAlertTests
       var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
       TypeWiseAlert.CheckAndAlert("TO_CONTROLLER", batteryParams, temperature);
-      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+      Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
     }
 
     [Test]
@@ -82,7 +81,7 @@ public class TypeWiseAlertTests
       var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
       TypeWiseAlert.CheckAndAlert("TO_CONTROLLER", batteryParams, temperature);
-      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+      Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
     }
 
     [Test]
@@ -93,7 +92,7 @@ public class TypeWiseAlertTests
       var batteryParams = new BatteryParameters { CoolingType = CoolingType.HI_ACTIVE_COOLING };
 
       TypeWiseAlert.CheckAndAlert("TO_EMAIL", batteryParams, temperature);
-      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+      Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
     }
 
     [Test]
@@ -104,7 +103,7 @@ public class TypeWiseAlertTests
       var batteryParams = new BatteryParameters { CoolingType = CoolingType.PASSIVE_COOLING };
 
       TypeWiseAlert.CheckAndAlert("TO_EMAIL", batteryParams, temperature);
-      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+      Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
     }
 
     [Test]
@@ -115,7 +114,7 @@ public class TypeWiseAlertTests
       var batteryParams = new BatteryParameters { CoolingType = CoolingType.HI_ACTIVE_COOLING };
 
       TypeWiseAlert.CheckAndAlert("TO_EMAIL", batteryParams, temperature);
-      NUnit.Framework.Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
+      Assert.Equals(expectedBreach, _classifyTemperatureBreachFunc(batteryParams.CoolingType, temperature));
     }
   }
 }
