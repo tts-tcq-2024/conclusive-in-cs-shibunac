@@ -1,5 +1,10 @@
+
+
+using static TemperatureBreachAnalyzer;
+
 public class TypewiseAlert
 {
+
   public enum AlertTarget
   {
     TO_CONTROLLER,
@@ -14,7 +19,6 @@ public class TypewiseAlert
 
   public static void CheckAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC)
   {
-    TemperatureBreachAnalyzer analyzer = new();
     BreachType breachType = ClassifyTemperatureBreach(batteryChar.coolingType, temperatureInC);
     NotifyAlert(alertTarget, breachType);
   }
@@ -51,3 +55,5 @@ public class TypewiseAlert
     }
   }
 }
+
+
